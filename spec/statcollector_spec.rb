@@ -9,7 +9,7 @@ location: /a/location/for/myproject
 max: 10
 collect:
  command1: "a command"
- command2: "another command"
+ command2: another command
 ')
 
 		@partialconfig = Psych.load('
@@ -42,5 +42,10 @@ collect:
 
 	it "should not be able to be configured without a location" do
 		expect { StatConfiguration.new(@invalidconfig) }.to raise_error
+	end
+
+	it "should have an hash of collection commands" do
+		config = StatConfiguration.new(@fullconfig)
+		config.collect.should eq "command1" => "a command","command2" => "another command"
 	end
 end
