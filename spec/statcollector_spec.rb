@@ -1,7 +1,7 @@
 require './statcollector.rb'
 require 'psych'
 
-describe "The collector" do
+describe "The StatConfiguration class" do
 	before(:all) do
 		@fullconfig = Psych.load('
 name: myproject
