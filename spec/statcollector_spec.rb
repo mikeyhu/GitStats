@@ -48,6 +48,13 @@ collect:
 		config = StatConfiguration.new(@fullconfig)
 		config.collect.should eq "command1" => "a command","command2" => "another command"
 	end
+
+	it "should setup a temp directory when created" do
+		config = StatConfiguration.new(@fullconfig)
+		config.tmp_repo.should end_with("myproject")
+		config.tmp_repo.should start_with("/tmp")
+		config.tmp_repo.should start_with(config.tmp_root)
+	end
 end
 
 describe "The StatCollector class" do
@@ -64,16 +71,10 @@ collect:
 bhash|2012-08-15|'
 	end
 
-	it "should create a temp directory when created" do
-		collector = StatCollector.new(StatConfiguration.new(@fullconfig))
-		collector.tmp_repo.should end_with("myproject")
-		collector.tmp_repo.should start_with("/tmp")
-		collector.tmp_repo.should start_with(collector.tmp_root)
-	end
-
 	it "should be able to retrieve a list of hashs containing commit information" do
 		repo = double("book")
 		repo.stub(:listCommits).and_return(@commits)
+		repo.stub(:setupRepo)
 		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
 		collector.commits.should eq([{:hash => "ahash",:date => "2012-08-15"},{:hash => "bhash",:date => "2012-08-15"}])
 	end

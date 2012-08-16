@@ -2,16 +2,16 @@ require 'tmpdir'
 require 'date'
 
 class StatCollector
-	attr_accessor :tmp_repo, :tmp_root, :repo
-	def initialize(configuration, repo = GitRunner.new)
-		@tmp_root = Dir.mktmpdir
-		@tmp_repo = @tmp_root + "/" + configuration.name
+	attr_accessor :repo, :configuration
+	def initialize(configuration, repo = GitRunner.new(configuration))
+		@configuration = configuration
 		@repo = repo
+		repo.setupRepo
 	end
 
 	def commits()
 		commits = []
-		@repo.listCommits.each_line do |line|
+		@repo.listCommits(@configuration).each_line do |line|
 	    	parts = line.split('|')
 	    	commits << {:hash=>parts[0], :date=>parts[1]}
 	    end
@@ -23,14 +23,19 @@ class StatCollector
 		def initialize()
 		end
 
+		def setupRepo()
+			`cd #{tmp_root} && git clone #{@conf["location"]}`
+		end
+
 		def listCommits()
+			
 		end
 	end
 
 end
 
 class StatConfiguration
-	attr_accessor :max, :name, :location, :collect
+	attr_accessor :max, :name, :location, :collect, :tmp_repo, :tmp_root
 
 	def initialize(yaml)
 		raise "Configuration must include a location" if yaml["location"].nil?
@@ -38,6 +43,8 @@ class StatConfiguration
 		@max = yaml["max"]||=0
 		@name = yaml["name"]
 		@collect = yaml["collect"]
+		@tmp_root = Dir.mktmpdir
+		@tmp_repo = @tmp_root + "/" + @name
 
 	end
 end
