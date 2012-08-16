@@ -1,0 +1,7 @@
+name: project-euler-scala
+location: git://github.com/mikeyhu/project-euler-scala.git
+max: 0
+
+collect:
+ #count all tests in .scala files
+ test: 'find src -iname *.scala | xargs -I{} grep "test(" {} | wc -l'

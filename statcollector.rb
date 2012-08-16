@@ -19,6 +19,7 @@ class StatCollector
 	end
 
 	def checkout_and_collect(commit)
+		@repo.checkout(@configuration,commit[:hash])
 		data = {
 			:hash	=> commit[:hash],
 			:date	=> commit[:date]

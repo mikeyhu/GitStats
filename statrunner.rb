@@ -3,10 +3,9 @@ require './statcollector.rb'
 require 'psych'
 
 
-yaml = Psych.load_file('aim.yaml')
+yaml = Psych.load_file('project-eular-scala.yaml')
 configuration = StatConfiguration.new(yaml)
 puts configuration.tmp_repo
 collector = StatCollector.new(configuration)
-commits = collector.commits
-puts collector.checkout_and_collect(commits[0])
+puts collector.get_statistics
 
