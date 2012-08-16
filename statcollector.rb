@@ -2,9 +2,29 @@ require 'tmpdir'
 require 'date'
 
 class StatCollector
-	attr_accessor :tmp_dir
-	def initialize(configuration)
-		@tmp_dir=Dir.mktmpdir + "/" + configuration.name
+	attr_accessor :tmp_repo, :tmp_root, :repo
+	def initialize(configuration, repo = GitRunner.new)
+		@tmp_root = Dir.mktmpdir
+		@tmp_repo = @tmp_root + "/" + configuration.name
+		@repo = repo
+	end
+
+	def commits()
+		commits = []
+		@repo.listCommits.each_line do |line|
+	    	parts = line.split('|')
+	    	commits << {:hash=>parts[0], :date=>parts[1]}
+	    end
+	    commits
+	end
+
+	class GitRunner
+
+		def initialize()
+		end
+
+		def listCommits()
+		end
 	end
 
 end

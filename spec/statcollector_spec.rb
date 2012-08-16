@@ -60,11 +60,21 @@ collect:
  command1: "a command"
  command2: another command
 ')
+		@commits = 'ahash|2012-08-15|
+bhash|2012-08-15|'
 	end
 
 	it "should create a temp directory when created" do
 		collector = StatCollector.new(StatConfiguration.new(@fullconfig))
-		collector.tmp_dir.should end_with("myproject")
-		collector.tmp_dir.should start_with("/tmp")
+		collector.tmp_repo.should end_with("myproject")
+		collector.tmp_repo.should start_with("/tmp")
+		collector.tmp_repo.should start_with(collector.tmp_root)
+	end
+
+	it "should be able to retrieve a list of hashs containing commit information" do
+		repo = double("book")
+		repo.stub(:listCommits).and_return(@commits)
+		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
+		collector.commits.should eq([{:hash => "ahash",:date => "2012-08-15"},{:hash => "bhash",:date => "2012-08-15"}])
 	end
 end
