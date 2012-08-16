@@ -3,10 +3,10 @@ require 'date'
 
 class StatCollector
 	attr_accessor :repo, :configuration
-	def initialize(configuration, repo = GitRunner.new(configuration))
+	def initialize(configuration, repo = GitRunner.new())
 		@configuration = configuration
 		@repo = repo
-		repo.setupRepo
+		@repo.setupRepo(@configuration)
 	end
 
 	def commits()
@@ -20,16 +20,21 @@ class StatCollector
 
 	class GitRunner
 
-		def initialize()
+
+		def setupRepo(conf)
+			`cd #{conf.tmp_root} && git clone #{conf.location}`
 		end
 
-		def setupRepo()
-			`cd #{tmp_root} && git clone #{@conf["location"]}`
+		def listCommits(conf)
+			runCmd(conf,"git checkout master")
+			return runCmd(conf,"git log --date=short --pretty='%H|%ad|'")
 		end
 
-		def listCommits()
-			
-		end
+		private
+
+		def runCmd(conf,cmd)
+		`cd #{conf.tmp_repo} && #{cmd}`
+	end
 	end
 
 end
