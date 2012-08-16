@@ -3,10 +3,10 @@ require './statcollector.rb'
 require 'psych'
 
 
-configuration = Psych.load_file('aim.yaml')
-collector = StatCollector.new(StatConfiguration.new(configuration))
-
+yaml = Psych.load_file('aim.yaml')
+configuration = StatConfiguration.new(yaml)
+puts configuration.tmp_repo
+collector = StatCollector.new(configuration)
 commits = collector.commits
-puts commits
-
+puts collector.checkout_and_collect(commits[0])
 

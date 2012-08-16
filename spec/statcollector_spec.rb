@@ -52,7 +52,6 @@ collect:
 	it "should setup a temp directory when created" do
 		config = StatConfiguration.new(@fullconfig)
 		config.tmp_repo.should end_with("myproject")
-		config.tmp_repo.should start_with("/tmp")
 		config.tmp_repo.should start_with(config.tmp_root)
 	end
 end
@@ -62,30 +61,53 @@ describe "The StatCollector class" do
 		@fullconfig = Psych.load('
 name: myproject
 location: /a/location/for/myproject
-max: 10
+max: 0
 collect:
  command1: "a command"
  command2: another command
 ')
 		@commits = 'ahash|2012-08-15|
-bhash|2012-08-15|'
+bhash|2012-08-15|
+chash|2012-08-14|'
+	end
+
+	before(:each) do
+		@repo = double("GitRunner")
+		@repo.stub(:listCommits).and_return(@commits)
+		@repo.stub(:setupRepo)
+		@repo.stub(:checkout)
+
+		@config = double("StatConfiguration")
+		@config.stub(:location).and_return("/location")
+		@config.stub(:collect).and_return({"command1" => "a command","command2" => "another command"})
 	end
 
 	it "should be able to retrieve a list of hashs containing commit information" do
-		repo = double("GitRunner")
-		repo.stub(:listCommits).and_return(@commits)
-		repo.stub(:setupRepo)
-		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
-		collector.commits.should eq([{:hash => "ahash",:date => "2012-08-15"},{:hash => "bhash",:date => "2012-08-15"}])
+		collector = StatCollector.new(StatConfiguration.new(@fullconfig),@repo)
+		collector.commits.should eq([{:hash => "ahash",:date => "2012-08-15"},{:hash => "bhash",:date => "2012-08-15"},{:hash => "chash",:date => "2012-08-14"}])
 	end
 
 	it "should be able to collect information on each commit" do
-		repo = double("GitRunner")
-		repo.stub(:listCommits).and_return(@commits)
-		repo.stub(:setupRepo)
-		repo.stub(:checkout)
-		repo.stub(:runCmd).and_return("1","2")
-		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
+		@repo.stub(:runCmd).and_return("1","2")
+		collector = StatCollector.new(StatConfiguration.new(@fullconfig),@repo)
 		collector.checkout_and_collect({:hash => "ahash", :date => "2012-08-15"}).should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+	end
+
+	it "should be able to collect information on a number of commits" do
+		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
+		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
+		collector = StatCollector.new(@config,@repo)
+		statistics = collector.get_statistics
+		statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+		statistics.size.should eq(3)
+	end
+
+	it "should be able to limit collecting to the value of max" do
+		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
+		@config.stub(:max).and_return(1)
+		collector = StatCollector.new(@config,@repo)
+		statistics = collector.get_statistics
+		#statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+		statistics.size.should eq(1)
 	end
 end

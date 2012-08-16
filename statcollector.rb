@@ -27,9 +27,14 @@ class StatCollector
 		data
 	end
 
+	def get_statistics()
+		current = 0
+		commits()
+			.keep_if{|commit|@configuration.max==0 || @configuration.max >= (current += 1)}
+			.map {|commit|checkout_and_collect(commit)}
+	end
+
 	class GitRunner
-
-
 		def setupRepo(conf)
 			`cd #{conf.tmp_root} && git clone #{conf.location}`
 		end
