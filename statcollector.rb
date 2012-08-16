@@ -18,6 +18,15 @@ class StatCollector
 	    commits
 	end
 
+	def checkout_and_collect(commit)
+		data = {
+			:hash	=> commit[:hash],
+			:date	=> commit[:date]
+		}
+		@configuration.collect.each {|name,command| data["#{name}"] = @repo.runCmd(@configuration,command).to_i }
+		data
+	end
+
 	class GitRunner
 
 
@@ -30,11 +39,13 @@ class StatCollector
 			return runCmd(conf,"git log --date=short --pretty='%H|%ad|'")
 		end
 
-		private
+		def checkout(conf,hash)
+			runCmd(conf,"git checkout #{hash}")
+		end
 
 		def runCmd(conf,cmd)
-		`cd #{conf.tmp_repo} && #{cmd}`
-	end
+			`cd #{conf.tmp_repo} && #{cmd}`
+		end
 	end
 
 end

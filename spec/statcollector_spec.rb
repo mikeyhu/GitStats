@@ -72,10 +72,20 @@ bhash|2012-08-15|'
 	end
 
 	it "should be able to retrieve a list of hashs containing commit information" do
-		repo = double("book")
+		repo = double("GitRunner")
 		repo.stub(:listCommits).and_return(@commits)
 		repo.stub(:setupRepo)
 		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
 		collector.commits.should eq([{:hash => "ahash",:date => "2012-08-15"},{:hash => "bhash",:date => "2012-08-15"}])
+	end
+
+	it "should be able to collect information on each commit" do
+		repo = double("GitRunner")
+		repo.stub(:listCommits).and_return(@commits)
+		repo.stub(:setupRepo)
+		repo.stub(:checkout)
+		repo.stub(:runCmd).and_return("1","2")
+		collector = StatCollector.new(StatConfiguration.new(@fullconfig),repo)
+		collector.checkout_and_collect({:hash => "ahash", :date => "2012-08-15"}).should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
 	end
 end
