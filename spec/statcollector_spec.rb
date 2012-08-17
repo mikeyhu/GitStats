@@ -7,6 +7,7 @@ describe "The StatConfiguration class" do
 name: myproject
 location: /a/location/for/myproject
 max: 10
+one_per_day: true
 collect:
  command1: "a command"
  command2: another command
@@ -31,6 +32,7 @@ collect:
 		config.max.should eq(10)
 		config.name.should eq("myproject")
 		config.location.should eq("/a/location/for/myproject")
+		config.one_per_day.should eq(true)
 	end
 
 	it "should be able to be configured with sensible defaults" do
@@ -38,6 +40,7 @@ collect:
 		config.max.should eq(0)
 		config.name.should eq("myproject")
 		config.location.should eq("/a/location/for/myproject")
+		config.one_per_day.should eq(false)
 	end
 
 	it "should not be able to be configured without a location" do
@@ -96,18 +99,34 @@ chash|2012-08-14|'
 	it "should be able to collect information on a number of commits" do
 		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
 		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
+		@config.stub(:one_per_day).and_return(false)
 		collector = StatCollector.new(@config,@repo)
 		statistics = collector.get_statistics
-		statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
-		statistics.size.should eq(3)
+		statistics.first.should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+		statistics.last.should eq({:hash => "chash", :date => "2012-08-14", "command1" => 5, "command2" => 6})
+
+		statistics.size.should eq(3) 
 	end
 
 	it "should be able to limit collecting to the value of max" do
 		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
 		@config.stub(:max).and_return(1)
+		@config.stub(:one_per_day).and_return(false)
 		collector = StatCollector.new(@config,@repo)
 		statistics = collector.get_statistics
 		#statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
 		statistics.size.should eq(1)
+	end
+
+	it "should be able to collect information on a maximum of 1 commit a day" do
+		@repo.stub(:runCmd).and_return("1","2","3","4")
+		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
+		@config.stub(:one_per_day).and_return(true)
+		collector = StatCollector.new(@config,@repo)
+		statistics = collector.get_statistics
+		statistics.size.should eq(2)
+		statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+		statistics[1].should eq({:hash => "chash", :date => "2012-08-14", "command1" => 3, "command2" => 4})
+		 
 	end
 end

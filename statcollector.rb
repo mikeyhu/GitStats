@@ -30,7 +30,9 @@ class StatCollector
 
 	def get_statistics()
 		current = 0
+		date = Date.today.next_day.to_s
 		commits()
+			.keep_if{|commit|(@configuration.one_per_day==false || commit[:date] < date) && date = commit[:date]}
 			.keep_if{|commit|@configuration.max==0 || @configuration.max >= (current += 1)}
 			.map {|commit|checkout_and_collect(commit)}
 	end
@@ -57,12 +59,13 @@ class StatCollector
 end
 
 class StatConfiguration
-	attr_accessor :max, :name, :location, :collect, :tmp_repo, :tmp_root
+	attr_accessor :max, :name, :location, :collect, :tmp_repo, :tmp_root, :one_per_day
 
 	def initialize(yaml)
 		raise "Configuration must include a location" if yaml["location"].nil?
 		@location = yaml["location"]
 		@max = yaml["max"]||=0
+		@one_per_day = yaml["one_per_day"]||=false
 		@name = yaml["name"]
 		@collect = yaml["collect"]
 		@tmp_root = Dir.mktmpdir
