@@ -1,0 +1,7 @@
+name: gitstats
+location: https://github.com/mikeyhu/GitStats.git
+max: 0
+
+collect:
+ ruby-files: 'find . -iname "*.rb" | wc -l'
+ spec-tests: 'find spec -name "*.rb" | xargs -I{} grep "it " {} | wc -l'

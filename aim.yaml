@@ -1,7 +1,0 @@
-name: aim
-location: ~/casper/aim
-max: 0
-
-collect:
- traits-main: 'find src/main -iname *.scala | xargs -t -I{} grep "trait" {} 2>&1 | grep -b1 -v "grep" | grep "grep" | sed "s/.*trait //g" | wc -l'
- traits-test: 'find src/test -iname *.scala | xargs -t -I{} grep "trait" {} 2>&1 | grep -b1 -v "grep" | grep "grep" | sed "s/.*trait //g" | wc -l'
