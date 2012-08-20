@@ -11,7 +11,7 @@ Example:
 	name: project-euler-scala
 	location: git://github.com/mikeyhu/project-euler-scala.git
 	max: 0
-	one_per_day:false
+	one_per_day: false
 
 	collect:
  		#count all tests in .scala files
