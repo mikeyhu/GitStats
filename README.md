@@ -8,14 +8,15 @@ To use GitStats you need to create a configuration file that defines the repo an
 
 Example:
 
-	name: aim
-	location: ~/casper/aim
+	name: project-euler-scala
+	location: git://github.com/mikeyhu/project-euler-scala.git
 	max: 0
-	one_per_day: true
+	one_per_day:false
 
 	collect:
-		traits-main: 'find src/main -iname *.scala | xargs -t -I{} grep "trait" {} 2>&1 | grep -b1 -v "grep" | grep "grep" | sed "s/.*trait //g" | wc -l'
-		traits-test: 'find src/test -iname *.scala | xargs -t -I{} grep "trait" {} 2>&1 | grep -b1 -v "grep" | grep "grep" | sed "s/.*trait //g" | wc -l'
+ 		#count all tests in .scala files
+ 		scala-tests: 'find src -iname *.scala | xargs -I{} grep "test(" {} | wc -l'
+
 
 
 Options in the config file:
