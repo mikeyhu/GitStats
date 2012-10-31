@@ -59,7 +59,7 @@ class StatCollector
 end
 
 class StatConfiguration
-	attr_accessor :max, :name, :location, :collect, :tmp_repo, :tmp_root, :one_per_day
+	attr_accessor :max, :name, :location, :collect, :tmp_repo, :tmp_root, :one_per_day, :decending
 
 	def initialize(yaml)
 		raise "Configuration must include a location" if yaml["location"].nil?
@@ -68,6 +68,7 @@ class StatConfiguration
 		@one_per_day = yaml["one_per_day"]||=false
 		@name = yaml["name"]
 		@collect = yaml["collect"]
+		@decending = yaml["decending"]||=false
 		@tmp_root = Dir.mktmpdir
 		@tmp_repo = @tmp_root + "/" + @name
 

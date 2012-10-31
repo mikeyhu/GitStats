@@ -4,19 +4,16 @@ class JSONWriter
 	def initialize()
 	end
 
-	def save(configuration,commits)
-		title = ["date"] + configuration.collect.map{|key,command|key}
-		stats = [title]
-		commits.each { |commit| stats << 
-			(commit.select{|key,entry|key != :hash}.map{|key,entry|entry})
-		}
-		dataFile = File.new("#{configuration.tmp_root}/graphData.js", "w")
-		dataFile.write("graphTitle=\"#{configuration.name}\"\n")
-		dataFile.write("graphData=" + stats.to_json)
-		dataFile.close
+	def output_json(configuration,commits)
+		commits.to_json
 	end
 
-	def copy_graph_to_output(configuration)
-		`cp views/graph.html #{configuration.tmp_root}`
+	def output_array(configuration,commits)
+		title = ["date"] + configuration.collect.map{|key,command|key}
+		stats = [title]
+		commits.each { |commit| stats <<
+			(commit.select{|key,entry|key != :hash}.map{|key,entry|entry})
+		}
+		stats.to_json
 	end
 end

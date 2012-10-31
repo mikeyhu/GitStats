@@ -1,21 +1,30 @@
 #!/usr/bin/env ruby
 require './statcollector.rb'
-require './csvwriter.rb'
 require './jsonwriter.rb'
+require './csvwriter.rb'
 require 'psych'
+require 'json'
 
 
 yaml = Psych.load_file(ARGV[0])
 configuration = StatConfiguration.new(yaml)
-
 collector = StatCollector.new(configuration)
 statistics = collector.get_statistics
 
-#writer = CSVWriter.new()
-#output = writer.output_to_csv(configuration,statistics)
-#puts output
+case configuration.output
+when "csv"
+	writer = CSVWriter.new()
+	puts writer.output(statistics)
+when "json"
+	puts statistics
+when "array"
+	writer = JSONWriter.new()
+	puts writer.output(configuration,statistics)
+else #graph
+	writer = JSONWriter.new()
+	output = writer.output(configuration,statistics)
+	template = File.open("./template/googlegraph.html").read
+	puts template.sub("$$DATA$$",output)
+end
 
-writer = JSONWriter.new()
-writer.save(configuration,statistics.reverse)
-writer.copy_graph_to_output(configuration)
-puts configuration.tmp_root + "/graph.html"
+
