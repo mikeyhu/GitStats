@@ -8,6 +8,7 @@ name: myproject
 location: /a/location/for/myproject
 max: 10
 one_per_day: true
+decending: true
 collect:
  command1: "a command"
  command2: another command
@@ -33,6 +34,7 @@ collect:
 		config.name.should eq("myproject")
 		config.location.should eq("/a/location/for/myproject")
 		config.one_per_day.should eq(true)
+		config.decending.should eq(true)
 	end
 
 	it "should be able to be configured with sensible defaults" do
@@ -41,6 +43,7 @@ collect:
 		config.name.should eq("myproject")
 		config.location.should eq("/a/location/for/myproject")
 		config.one_per_day.should eq(false)
+		config.decending.should eq(false)
 	end
 
 	it "should not be able to be configured without a location" do

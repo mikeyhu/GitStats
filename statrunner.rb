@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require './statcollector.rb'
-require './csvwriter.rb'
+require './jsonwriter.rb'
 require 'psych'
 require 'json'
 
@@ -11,8 +11,8 @@ puts configuration.tmp_repo
 collector = StatCollector.new(configuration)
 statistics = collector.get_statistics
 
-writer = CSVWriter.new()
-output = writer.output_to_csv(configuration,statistics)
+writer = JSONWriter.new()
+output = writer.output(configuration,statistics)
 puts output
 
 
