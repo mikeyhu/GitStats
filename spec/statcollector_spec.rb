@@ -9,6 +9,7 @@ location: /a/location/for/myproject
 max: 10
 one_per_day: true
 decending: true
+output: csv
 collect:
  command1: "a command"
  command2: another command
@@ -35,6 +36,7 @@ collect:
 		config.location.should eq("/a/location/for/myproject")
 		config.one_per_day.should eq(true)
 		config.decending.should eq(true)
+		config.output.should eq("csv")
 	end
 
 	it "should be able to be configured with sensible defaults" do
@@ -44,6 +46,7 @@ collect:
 		config.location.should eq("/a/location/for/myproject")
 		config.one_per_day.should eq(false)
 		config.decending.should eq(false)
+		config.output.should eq("graph")
 	end
 
 	it "should not be able to be configured without a location" do
