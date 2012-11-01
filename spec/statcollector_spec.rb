@@ -103,18 +103,31 @@ chash|2012-08-14|'
 		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
 		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
 		@config.stub(:one_per_day).and_return(false)
+		@config.stub(:decending).and_return(true)
 		collector = StatCollector.new(@config,@repo)
 		statistics = collector.get_statistics
 		statistics.first.should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
 		statistics.last.should eq({:hash => "chash", :date => "2012-08-14", "command1" => 5, "command2" => 6})
-
 		statistics.size.should eq(3) 
+	end
+
+	it "should be able to collect information on a number of commits in acending order" do
+		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
+		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
+		@config.stub(:one_per_day).and_return(false)
+		@config.stub(:decending).and_return(false)
+		collector = StatCollector.new(@config,@repo)
+		statistics = collector.get_statistics
+		statistics.first.should eq({:hash => "chash", :date => "2012-08-14", "command1" => 5, "command2" => 6})
+		statistics.last.should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
+
 	end
 
 	it "should be able to limit collecting to the value of max" do
 		@repo.stub(:runCmd).and_return("1","2","3","4","5","6")
 		@config.stub(:max).and_return(1)
 		@config.stub(:one_per_day).and_return(false)
+		@config.stub(:decending).and_return(true)
 		collector = StatCollector.new(@config,@repo)
 		statistics = collector.get_statistics
 		#statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
@@ -125,11 +138,11 @@ chash|2012-08-14|'
 		@repo.stub(:runCmd).and_return("1","2","3","4")
 		@config.stub(:max).and_return(0) #0 means that we should return an unlimited number of results
 		@config.stub(:one_per_day).and_return(true)
+		@config.stub(:decending).and_return(true)
 		collector = StatCollector.new(@config,@repo)
 		statistics = collector.get_statistics
 		statistics.size.should eq(2)
 		statistics[0].should eq({:hash => "ahash", :date => "2012-08-15", "command1" => 1, "command2" => 2})
 		statistics[1].should eq({:hash => "chash", :date => "2012-08-14", "command1" => 3, "command2" => 4})
-		 
 	end
 end
