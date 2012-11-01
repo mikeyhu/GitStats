@@ -31,10 +31,11 @@ class StatCollector
 	def get_statistics()
 		current = 0
 		date = Date.today.next_day.to_s
-		commits()
+		commits = commits()
 			.keep_if{|commit|(@configuration.one_per_day==false || commit[:date] < date) && date = commit[:date]}
 			.keep_if{|commit|@configuration.max==0 || @configuration.max >= (current += 1)}
 			.map {|commit|checkout_and_collect(commit)}
+		@configuration.decending ? commits : commits.reverse
 	end
 
 	class GitRunner
