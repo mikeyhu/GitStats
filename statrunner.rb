@@ -19,10 +19,10 @@ when "json"
 	puts statistics
 when "array"
 	writer = JSONWriter.new()
-	puts writer.output(configuration,statistics)
+	puts writer.output_json(configuration,statistics)
 else #graph
 	writer = JSONWriter.new()
-	output = writer.output(configuration,statistics)
+	output = writer.output_array(configuration,statistics)
 	template = File.open("./template/googlegraph.html").read
 	puts template.sub("$$DATA$$",output)
 end
