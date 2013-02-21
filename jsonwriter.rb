@@ -9,11 +9,15 @@ class JSONWriter
 	end
 
 	def output_array(configuration,commits)
+		generate_array(configuration,commits).to_json
+	end
+
+	def generate_array(configuration,commits)
 		title = ["date"] + configuration.collect.map{|key,command|key}
 		stats = [title]
 		commits.each { |commit| stats <<
 			(commit.select{|key,entry|key != :hash}.map{|key,entry|entry})
 		}
-		stats.to_json
+		stats
 	end
 end
