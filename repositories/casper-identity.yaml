@@ -1,0 +1,11 @@
+name: identity
+location: ~/casper/identity
+max: 0
+one_per_day: true
+
+collect:
+ #count all tests in .scala files
+ unit-tests: 'find */test/unit -iname *.java | xargs -I{} grep "@Test" {} | wc -l'
+ integration-tests: 'find */test/integration -iname *.java | xargs -I{} grep "@Test" {} | wc -l'
+ functional-tests: 'find */test/functional -iname *.java | xargs -I{} grep "@Test" {} | wc -l'
+

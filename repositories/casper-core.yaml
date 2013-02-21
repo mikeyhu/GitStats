@@ -1,0 +1,12 @@
+name: core
+location: ~/casper/core
+max: 0
+one_per_day: true
+
+collect:
+ #count all tests in .scala files
+ unit-tests: 'find src/test/unit -iname *.scala | xargs -I{} grep "it(\"" {} | wc -l'
+ integration-tests: 'find src/test/integration -iname *.scala | xargs -I{} grep "it(\"" {} | wc -l'
+ functional-tests: 'find src/test/functional -iname *.scala | xargs -I{} grep "it(\"" {} | wc -l'
+ system-tests: 'find src/test/system -iname *.scala | xargs -I{} grep "it(\"" {} | wc -l'
+
